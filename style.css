@@ -1,0 +1,126 @@
+/* Pengaturan dasar untuk semua elemen */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Mengatur font utama dan warna latar belakang untuk seluruh halaman */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7f9; /* Warna abu-abu muda */
+    color: #333;
+}
+
+/* === BAGIAN STYLE UNTUK LOADING SCREEN === */
+
+#loader-wrapper {
+    position: fixed; /* Tetap di posisi yang sama meskipun di-scroll */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #6a5acd; /* Warna utama: Slate Blue */
+    display: flex; /* Menggunakan flexbox untuk menengahkan konten */
+    justify-content: center; /* Menengahkan secara horizontal */
+    align-items: center; /* Menengahkan secara vertikal */
+    z-index: 999; /* Memastikan tampil di paling depan */
+}
+
+.loader-title {
+    font-size: 4rem; /* Ukuran font besar */
+    color: #ffffff; /* Warna teks putih */
+    animation: pulse 1.5s infinite; /* Menambahkan animasi denyut */
+}
+
+/* Animasi untuk judul "Bopee" */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+/* === BAGIAN STYLE UNTUK KONTEN UTAMA === */
+
+header {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: #6a5acd; /* Warna slate blue yang sama dengan loading screen */
+}
+
+/* Tampilan untuk kumpulan produk */
+.product-grid {
+    display: grid;
+    /* Membuat 3 kolom di layar besar, dan 1 kolom di layar kecil */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px; /* Jarak antar kartu produk */
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto; /* Menengahkan grid */
+}
+
+/* Style untuk setiap kartu produk */
+.product-card {
+    background-color: #ffffff;
+    border-radius: 10px; /* Sudut melengkung */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Efek bayangan */
+    overflow: hidden; /* Agar gambar tidak keluar dari kartu */
+    text-align: center;
+    padding-bottom: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px); /* Sedikit terangkat saat disentuh mouse */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover; /* Gambar akan menyesuaikan ukuran */
+}
+
+.product-card h3 {
+    font-size: 1.2rem;
+    margin: 15px 0 5px 0;
+}
+
+.price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Style untuk tombol "Beli" */
+.buy-button {
+    background-color: #7b68ee; /* Warna Medium Slate Blue, sedikit lebih cerah */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer; /* Mengubah kursor menjadi tangan saat disentuh */
+    transition: background-color 0.3s ease;
+}
+
+.buy-button:hover {
+    background-color: #6a5acd; /* Warna menjadi lebih gelap saat disentuh */
+}

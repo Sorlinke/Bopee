@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bopee Paylater - Beli Sekarang, Bayar Nanti</title>
+    
+    <!-- Memuat Tailwind CSS untuk styling yang modern dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Memuat Google Fonts (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Kustom -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffffff; /* <CHANGE> Light theme - white background */
+            color: #1f2937; /* <CHANGE> Dark text for light theme */
+        }
+
+        /* === GAYA UNTUK LAYAR LOADING === */
+        #loader-wrapper {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8); /* <CHANGE> Blue gradient for light theme */
+        }
+        .loader-title {
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* === GAYA UNTUK KARTU PRODUK === */
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff; /* <CHANGE> White cards for light theme */
+            border: 1px solid #e5e7eb; /* <CHANGE> Light border */
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* <CHANGE> Lighter shadow */
+        }
+
+        /* === GAYA UNTUK TOMBOL DENGAN GRADIEN === */
+        .gradient-button {
+            background-image: linear-gradient(to right, #3b82f6, #1d4ed8); /* <CHANGE> Blue gradient */
+            transition: all 0.3s ease;
+            background-size: 200% auto;
+        }
+        .gradient-button:hover {
+            background-position: right center;
+            transform: scale(1.05);
+        }
+        
+        /* === GAYA UNTUK OPSI PEMBAYARAN AKTIF === */
+        .payment-option-container.selected {
+            border-color: #3b82f6; /* <CHANGE> Blue border */
+            box-shadow: 0 0 0 2px #93c5fd; /* <CHANGE> Light blue shadow */
+        }
+
+        /* === GAYA UNTUK ANIMASI CENTANG === */
+        .checkmark__circle {
+            stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 2; stroke-miterlimit: 10; stroke: #22c55e; fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .checkmark {
+            width: 80px; height: 80px; border-radius: 50%; display: block; stroke-width: 3; stroke: #fff; stroke-miterlimit: 10; margin: 10% auto;
+            box-shadow: inset 0px 0px 0px #22c55e;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .checkmark__check {
+            transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+        @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+        @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px #22c55e; } }
+
+        /* <CHANGE> Light theme specific styles */
+        .light-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .light-header {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900"> <!-- <CHANGE> Light background and dark text -->
+
+    <!-- === 1. HALAMAN LOADING === -->
+    <div id="loader-wrapper" class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50">
+        <h1 class="loader-title text-5xl md:text-6xl font-bold text-white tracking-widest">Bopee</h1>
+    </div>
+
+    <!-- Container untuk semua halaman agar mudah dikontrol oleh JavaScript -->
+    <div id="app-container">
+
+        <!-- === 2. HALAMAN UTAMA (PRODUK) === -->
+        <div id="home-page" class="hidden">
+            <!-- <CHANGE> Added profile button in header -->
+            <header class="light-header text-white text-center py-12 md:py-20 px-4 shadow-xl relative">
+                <button id="profile-button" class="absolute top-4 right-4 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-full text-sm font-medium transition-all">
+                    <span class="hidden sm:inline">Melihat Profile</span>
+                    <span class="sm:hidden">Profile</span>
+                </button>
+                <h1 class="text-4xl md:text-5xl font-bold">BOPEE</h1>
+                <p class="text-lg md:text-xl text-blue-200 mt-2">Dapatkan barang kesukaanmu dengan mudah!</p>
+            </header>
+
+            <main class="container mx-auto p-4 sm:p-6 md:p-10 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                <!-- ... existing code ... -->
+                <!-- Produk 1 -->
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product1.jpg" alt="Kursi Gaming" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Kursi Gaming</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶5̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 150.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+               <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product2.jpg" alt="Sepatu Pria" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Sepatu Pria Kece</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶7̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 250.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product3.jpg" alt="Smartwatch" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Smartwatch</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶1̶.̶0̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 620.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product4.jpg" alt="Ransel" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Ransel</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶̶2̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 180.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product5.jpg" alt="Jaket Perempuan" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Jaket Perempuan Cantik Parah</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶2̶5̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 150.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product6.jpg" alt="Sepatu Perempuan" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Sepatu Perempuan</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶2̶1̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 180.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product7.jpg" alt="Kacamata" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Kacamata Pria/Wanita Keren</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶1̶3̶5̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 100.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product8.jpg" alt="Parfum" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Parfum Niche</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶9̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 230.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product9.jpg" alt="TWS" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">TWS Premium</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶1̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 50.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product10.jpg" alt="Lampu" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Lampu Aesthethic</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶1̶0̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 70.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product11.jpg" alt="Lampu" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Baju ESTETIK</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶ ̶9̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 90.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+
+                <div class="product-card bg-white rounded-xl shadow-lg overflow-hidden text-center">
+                    <img src="product12.jpg" alt="Lampu" class="w-full h-52 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Sendal Perempuan</h3>
+                        <p class="price text-lg font-semibold text-red-700 mb-5">Rp  ̶̶̶1̶2̶0̶.̶0̶0̶0̶</p>
+                        <p class="price text-lg font-semibold text-gray-700 mb-5">Rp 40.000</p>
+                        <a href="#" class="buy-button gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md">Beli</a>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- === 3. HALAMAN CHECKOUT === -->
+        <div id="checkout-page" class="hidden">
+            <!-- <CHANGE> Added back button in header -->
+            <header class="bg-white text-center py-8 md:py-10 px-4 relative border-b">
+                <button id="back-to-home" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">
+                    ← Kembali
+                </button>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Detail Pembayaran</h1>
+            </header>
+
+            <div class="container mx-auto p-4 md:p-10 flex flex-col lg:flex-row gap-8">
+                <!-- <CHANGE> Removed contact information section -->
+                <!-- Kolom Kiri: Metode Pembayaran -->
+                <div class="w-full lg:w-2/3 bg-white p-6 md:p-8 rounded-xl shadow-lg border">
+                    <h2 class="text-2xl font-bold mb-6 pb-4 border-b">Pilih Metode Pembayaran</h2>
+                    <div class="space-y-4" id="payment-options">
+                         <div class="payment-option-container p-4 border-2 rounded-lg cursor-pointer transition duration-300 selected">
+                            <input type="radio" id="paylater" name="payment" value="paylater" checked class="hidden">
+                            <label for="paylater" class="flex items-center cursor-pointer"><span class="w-5 h-5 mr-4 inline-block border-2 border-gray-400 rounded-full"></span><div><strong>Bopee Paylater</strong> <br><small>Bayar dalam 30 hari, Bunga 0%</small></div></label>
+                        </div>
+                         <div class="payment-option-container p-4 border-2 rounded-lg cursor-pointer transition duration-300">
+                            <input type="radio" id="cc" name="payment" value="cc" class="hidden">
+                             <label for="cc" class="flex items-center cursor-pointer"><span class="w-5 h-5 mr-4 inline-block border-2 border-gray-400 rounded-full"></span><div><strong>Kartu Kredit / Debit</strong><br><small>Visa, Mastercard, etc.</small></div></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Ringkasan Pesanan -->
+                <div class="w-full lg:w-1/3 bg-white p-6 md:p-8 rounded-xl shadow-lg h-fit border">
+                    <h2 class="text-2xl font-bold mb-6 pb-4 border-b">Ringkasan Pesanan</h2>
+                    <div id="summary-item" class="flex items-center gap-4 mb-6">
+                        <img id="summary-img" src="https://placehold.co/100x100" alt="Produk" class="w-24 h-24 rounded-lg object-cover">
+                        <div>
+                            <h3 id="summary-title" class="font-bold text-lg">Nama Produk</h3>
+                            <p id="summary-price" class="font-semibold text-gray-600">Rp 0</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-gray-600 border-t pt-4">
+                        <p class="flex justify-between"><span>Subtotal</span><span id="summary-subtotal">Rp 0</span></p>
+                        <p class="flex justify-between"><span>Biaya Layanan</span><span>Rp 2.500</span></p>
+                        <p class="flex justify-between font-bold text-xl text-gray-800 mt-2"><span >Total</span><span id="summary-total">Rp 2.500</span></p>
+                    </div>
+                    <a href="#" id="pay-button" class="mt-6 w-full text-center gradient-button text-white font-bold py-3 px-6 rounded-full shadow-md block">Bayar Sekarang</a>
+                    <p class="text-center text-sm text-gray-500 mt-4">🔒 Transaksi aman dan terenkripsi</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- <CHANGE> Added profile page with paylater billing -->
+        <!-- === 4. HALAMAN PROFILE === -->
+        <div id="profile-page" class="hidden">
+            <header class="bg-white text-center py-8 md:py-10 px-4 relative border-b">
+                <button id="back-to-home-from-profile" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-full text-sm font-medium transition-all">
+                    ← Kembali
+                </button>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Profile Saya</h1>
+            </header>
+
+            <div class="container mx-auto p-4 md:p-10 max-w-4xl">
+                <!-- User Info Card -->
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border mb-8">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span class="text-2xl font-bold text-blue-600">L</span>
+                        </div>
+                        <div class="text-center md:text-left flex-1">
+                            <h2 class="text-2xl font-bold text-gray-800">Launa</h2>
+                            <p class="text-gray-600">Launa081@email.com</p>
+                            <p class="text-sm text-gray-500 mt-1">Member sejak Desember 2024</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="bg-blue-50 px-4 py-2 rounded-full">
+                                <span class="text-blue-600 font-semibold">Silver Member</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-lg border text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">Total Pembelian</h3>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">21</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">Total Belanja</h3>
+                        <p class="text-3xl font-bold text-green-600 mt-2">Rp 1,91JT</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border text-center">
+                        <h3 class="text-lg font-semibold text-gray-700">Poin Reward</h3>
+                        <p class="text-3xl font-bold text-purple-600 mt-2">1,250</p>
+                    </div>
+                </div>
+
+                <!-- Paylater Billing Section -->
+                <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border">
+                    <h2 class="text-2xl font-bold mb-6 pb-4 border-b">Tagihan Paylater</h2>
+                    
+                    <!-- Active Bills -->
+                    <div class="space-y-4">
+                        <div class="border rounded-lg p-4 bg-red-50 border-red-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Sepatu Perempuan</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-3P0L2D5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">Jatuh Tempo</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-red-600">Rp 182.500</span>
+                                <span class="text-sm text-gray-500">Dikenakan Bunga 1% per Hari</span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Sepatu Lari</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-2B3C4D5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Menunggu</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-yellow-600">Rp 142.500</span>
+                                <span class="text-sm text-gray-500">2 Hari Lagi</span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">TWS Premium</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-2B3P2D5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Menunggu</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-yellow-600">Rp 52.500</span>
+                                <span class="text-sm text-gray-500">3 Hari Lagi</span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Kacamata Pria/Wanita Keren</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-2B01DD5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Menunggu</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-yellow-600">Rp 102.500</span>
+                                <span class="text-sm text-gray-500">3 Hari Lagi</span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Baju ESTETIK</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-2B3C4D5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Menunggu</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-yellow-600">Rp 92.500</span>
+                                <span class="text-sm text-gray-500">3 Hari Lagi</span>
+                            </div>
+                        </div>
+
+                        <div class="border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 class="font-semibold text-gray-800">Jaket Perempuan Cantik Parah</h3>
+                                    <p class="text-sm text-gray-600">Transaksi: BOPEE-3P0C4D5E</p>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">Menunggu</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold text-yellow-600">Rp 152.500</span>
+                                <span class="text-sm text-gray-500">3 Hari Lagi</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="mt-6 pt-4 border-t">
+                        <div class="flex justify-between items-center text-lg font-semibold">
+                            <span>Total Tagihan Aktif:</span>
+                            <span class="text-red-600">Rp 730.400</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- === 5. HALAMAN SUKSES === -->
+        <div id="success-page" class="hidden min-h-screen flex justify-center items-center p-4">
+             <div class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl text-center max-w-lg w-full border">
+                <div class="success-icon">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Pembayaran Berhasil!</h1>
+                <p class="text-gray-600 mb-6">Terima kasih telah melakukan transaksi dengan Bopee.</p>
+                <div class="bg-gray-50 text-left p-4 rounded-lg border mb-8">
+                     <p class="flex justify-between text-sm"><strong>ID Transaksi:</strong> <span>BOPEE-1A2B3C4D</span></p>
+                     <p class="flex justify-between text-sm mt-2"><strong>Total Bayar:</strong> <span id="success-total" class="font-bold">Rp 152.500</span></p>
+                </div>
+                <a href="#" id="back-home-button" class="gradient-button text-white font-bold py-3 px-8 rounded-full shadow-md inline-block">Kembali ke Beranda</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- === 6. MODAL KONFIRMASI === -->
+    <div id="confirmation-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4 transition-opacity duration-300">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full transform transition-all duration-300 scale-95">
+            <h2 class="text-xl font-bold mb-4">Konfirmasi Pembayaran</h2>
+            <p class="text-gray-600 mb-6">Yakin ingin menggunakan fitur Paylater dengan bunga 0%?</p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-8 rounded-full transition-colors">Batal</button>
+                <button id="confirm-button" class="gradient-button text-white font-bold py-2 px-8 rounded-full transition-colors">Yakin</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loader = document.getElementById('loader-wrapper');
+            const homePage = document.getElementById('home-page');
+            const checkoutPage = document.getElementById('checkout-page');
+            const profilePage = document.getElementById('profile-page'); // <CHANGE> Added profile page
+            const successPage = document.getElementById('success-page');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const confirmButton = document.getElementById('confirm-button');
+            const cancelButton = document.getElementById('cancel-button');
+
+            const allPages = [homePage, checkoutPage, profilePage, successPage]; // <CHANGE> Added profile page to array
+
+            function showPage(pageToShow) {
+                allPages.forEach(page => page.classList.add('hidden'));
+                pageToShow.classList.remove('hidden');
+                window.scrollTo(0, 0);
+            }
+            
+            function showModal() {
+                confirmationModal.classList.remove('hidden');
+                setTimeout(() => {
+                    confirmationModal.classList.remove('opacity-0');
+                    confirmationModal.querySelector('div').classList.remove('scale-95');
+                }, 10);
+            }
+
+            function hideModal() {
+                confirmationModal.classList.add('opacity-0');
+                confirmationModal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => confirmationModal.classList.add('hidden'), 300);
+            }
+
+            // 1. Logika Loading
+            setTimeout(() => {
+                loader.classList.add('opacity-0');
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    showPage(homePage);
+                }, 500);
+            }, 2500);
+
+            // <CHANGE> Added profile button functionality
+            // 2. Logika Tombol Profile
+            document.getElementById('profile-button').addEventListener('click', (event) => {
+                event.preventDefault();
+                showPage(profilePage);
+            });
+
+            // <CHANGE> Added back button functionality
+            // 3. Logika Tombol Kembali
+            document.getElementById('back-to-home').addEventListener('click', (event) => {
+                event.preventDefault();
+                showPage(homePage);
+            });
+
+            document.getElementById('back-to-home-from-profile').addEventListener('click', (event) => {
+                event.preventDefault();
+                showPage(homePage);
+            });
+
+            // 4. Logika Tombol "Beli"
+            document.querySelectorAll('.buy-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    
+                    const card = button.closest('.product-card');
+                    const title = card.querySelector('h3').textContent;
+                    
+                    const priceElements = card.querySelectorAll('.price');
+                    const priceText = priceElements[priceElements.length - 1].textContent;
+
+                    const imgSrc = card.querySelector('img').src;
+                    
+                    const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+                    const serviceFee = 2500;
+                    const total = price + serviceFee;
+
+                    document.getElementById('summary-title').textContent = title;
+                    document.getElementById('summary-img').src = imgSrc;
+                    document.getElementById('summary-price').textContent = priceText;
+                    document.getElementById('summary-subtotal').textContent = priceText;
+                    document.getElementById('summary-total').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+                    document.getElementById('success-total').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+
+                    showPage(checkoutPage);
+                });
+            });
+
+            // 5. Logika Pilihan Pembayaran
+            document.querySelectorAll('.payment-option-container').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.payment-option-container').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    item.querySelector('input[type="radio"]').checked = true;
+                });
+            });
+
+            // 6. Logika Tombol "Bayar Sekarang"
+            document.getElementById('pay-button').addEventListener('click', (event) => {
+                event.preventDefault();
+                const isPaylaterSelected = document.getElementById('paylater').checked;
+
+                if (isPaylaterSelected) {
+                    showModal();
+                } else {
+                    showPage(successPage);
+                }
+            });
+
+            // 7. Logika Tombol Modal
+            confirmButton.addEventListener('click', () => {
+                hideModal();
+                showPage(successPage);
+            });
+
+            cancelButton.addEventListener('click', hideModal);
+            
+            confirmationModal.addEventListener('click', (event) => {
+                if (event.target === confirmationModal) hideModal();
+            });
+
+            // 8. Logika Tombol "Kembali ke Beranda"
+            document.getElementById('back-home-button').addEventListener('click', (event) => {
+                event.preventDefault();
+                showPage(homePage);
+            });
+        });
+    </script>
+</body>
+</html>
